@@ -75,4 +75,24 @@ object Lab {
       "testsOffered" -> o.testsOffered
     )
   }
+
+  implicit object LabReads extends Reads[Lab] {
+    override def reads(json: JsValue): JsResult[Lab] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          Lab(
+            (obj \ "_id").as[Int],
+            (obj \ "name").as[String],
+            (obj \ "info").as[String],
+            (obj \ "url").as[String],
+            (obj \ "testsOffered").as[List[LabTest]]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+
+      case _ => JsError("expected.jsobject")
+    }
+  }
 }
