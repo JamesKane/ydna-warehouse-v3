@@ -277,11 +277,34 @@ object SequencingData {
 
 object Call {
   implicit object callWrites extends OWrites[Call] {
-    override def writes(o: Call): JsObject = ???
+    override def writes(o: Call): JsObject = Json.obj(
+      "fileID" -> o.fileID,
+      "allele" -> o.allele,
+      "depth" -> o.depth,
+      "qual" -> o.qual,
+      "_creationDate" -> o._creationDate.fold(-1L)(_.getMillis),
+      "_updateDate" -> o._updateDate.fold(-1L)(_.getMillis),
+    )
   }
 
   implicit object callReads extends Reads[Call] {
-    override def reads(json: JsValue): JsResult[Call] = ???
+    override def reads(json: JsValue): JsResult[Call] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          Call(
+            (obj \ "fileID").asOpt[BSONObjectID],
+            (obj \ "allele").as[String],
+            (obj \ "depth").asOpt[Int],
+            (obj \ "qual").asOpt[Double],
+            (obj \ "_creationDate").asOpt[Long].map(new DateTime(_)),
+            (obj \ "_updateDate").asOpt[Long].map(new DateTime(_))
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+      case _ => JsError("expected.jsobject")
+    }
   }
 }
 
