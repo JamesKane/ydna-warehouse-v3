@@ -252,11 +252,26 @@ object FileData {
 
 object SequencingData {
   implicit object SequencingDataWrites extends OWrites[SequencingData] {
-    override def writes(o: SequencingData): JsObject = ???
+    override def writes(o: SequencingData): JsObject = Json.obj(
+      "testType" -> o.testType.id,
+      "fileData" -> o.fileData
+    )
   }
 
   implicit object SequencingDataReads extends Reads[SequencingData] {
-    override def reads(json: JsValue): JsResult[SequencingData] = ???
+    override def reads(json: JsValue): JsResult[SequencingData] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          SequencingData(
+            TestType.apply((obj \ "testType").as[Int]),
+            (obj \ "fileData").as[Set[FileData]]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+      case _ => JsError("expected.jsobject")
+    }
   }
 }
 
