@@ -310,11 +310,30 @@ object Call {
 
 object CallData {
   implicit object callDataWrites extends OWrites[CallData] {
-    override def writes(o: CallData): JsObject = ???
+    override def writes(o: CallData): JsObject = Json.obj(
+      "accession" -> o.accession.id,
+      "start" -> o.start,
+      "stop" -> o.stop,
+      "calls" -> o.calls
+    )
   }
 
   implicit object callDataReads extends Reads[CallData] {
-    override def reads(json: JsValue): JsResult[CallData] = ???
+    override def reads(json: JsValue): JsResult[CallData] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          CallData(
+            AccessionType.apply((obj \ "accession").as[Int]),
+            (obj \ "start").as[Int],
+            (obj \ "stop").as[Int],
+            (obj \ "calls").as[Set[Call]]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+      case _ => JsError("expected.jsobject")
+    }
   }
 }
 
