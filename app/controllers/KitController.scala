@@ -13,22 +13,22 @@ class KitController @Inject()(implicit val ec: ExecutionContext, val repo: KitRe
 
   def findAll(): Action[AnyContent] = Action.async { implicit request =>
     repo.findAll().map {
-      subjects => Ok(Json.toJson(subjects))
+      kits => Ok(Json.toJson(kits))
     }
   }
 
   def findOne(id: UUID): Action[AnyContent] = Action.async { implicit request =>
     repo.findOne(id).map {
-      person => Ok(Json.toJson(person))
+      kit => Ok(Json.toJson(kit))
     }
   }
 
   def create(): Action[JsValue] = Action.async(controllerComponents.parsers.json) { implicit request =>
     request.body.validate[Kit].fold(
       _ => Future.successful(BadRequest("Cannot parse request body")),
-      subject =>
-        repo.create(subject).map {
-          _ => Created(Json.toJson(subject))
+      kit =>
+        repo.create(kit).map {
+          _ => Created(Json.toJson(kit))
         }
     )
   }
@@ -36,8 +36,8 @@ class KitController @Inject()(implicit val ec: ExecutionContext, val repo: KitRe
   def update(id: UUID): Action[JsValue] = Action.async(controllerComponents.parsers.json) { implicit request =>
     request.body.validate[Kit].fold(
       _ => Future.successful(BadRequest("Cannot parse request body")),
-      subject =>
-        repo.update(id, subject).map {
+      kit =>
+        repo.update(id, kit).map {
           result => Ok(Json.toJson(result.code))
         }
     )

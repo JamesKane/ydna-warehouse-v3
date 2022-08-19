@@ -15,10 +15,17 @@ DELETE  /api/v3/subjects/:id    controllers.SubjectController.delete(id: java.ut
 
 # kits API routing
 GET     /api/v3/kits            controllers.KitController.findAll()
-GET     /api/v3/kits/:id        controllers.KitContoller.findOne(id: java.util.UUID)
+GET     /api/v3/kits/:id        controllers.KitController.findOne(id: java.util.UUID)
 POST    /api/v3/kits            controllers.KitController.create()
 PUT     /api/v3/kits/:id        controllers.KitController.update(id: java.util.UUID)
 DELETE  /api/v3/kits/:id        controllers.KitController.delete(id: java.util.UUID)
+
+# variants API routing
+GET     /api/v3/variants            controllers.VariantController.findAll()
+GET     /api/v3/variants/:id        controllers.VariantController.findOne(id: String)
+POST    /api/v3/variants            controllers.VariantController.create()
+PUT     /api/v3/variants/:id        controllers.VariantController.update(id: String)
+DELETE  /api/v3/variants/:id        controllers.VariantController.delete(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
