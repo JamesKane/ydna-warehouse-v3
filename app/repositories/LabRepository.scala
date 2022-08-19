@@ -12,7 +12,7 @@ import reactivemongo.play.json.compat.json2bson._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class LabRepository @Inject()(implicit ec: ExecutionContext, api: ReactiveMongoApi) {
+class LabRepository @Inject()(implicit ec: ExecutionContext, api: ReactiveMongoApi) extends MongoRepository {
 
   def collection: Future[BSONCollection] = api.database.map(db => db.collection("labs"))
 
@@ -22,14 +22,14 @@ class LabRepository @Inject()(implicit ec: ExecutionContext, api: ReactiveMongoA
     collect[Seq](limit, Cursor.FailOnError[Seq[Lab]]()))
 
   def findOne(id: BSONObjectID): Future[Option[Lab]] =
-    collection.flatMap(_.find(BSONDocument("_id" -> id), Option.empty[Lab]).one[Lab])
+    collection.flatMap(_.find(queryBy(id), Option.empty[Lab]).one[Lab])
 
   def create(lab: Lab): Future[WriteResult] =
     collection.flatMap(_.insert(ordered = false).one(lab))
 
   def update(id: BSONObjectID, lab: Lab): Future[WriteResult] =
-    collection.flatMap(_.update(ordered = false).one(BSONDocument("_id" -> id), lab))
+    collection.flatMap(_.update(ordered = false).one(queryBy(id), lab))
 
   def delete(id: BSONObjectID): Future[WriteResult] =
-    collection.flatMap(_.delete().one(BSONDocument("_id" -> id), Some(1)))
+    collection.flatMap(_.delete().one(queryBy(id), Some(1)))
 }
