@@ -2,12 +2,12 @@ package repositories
 
 import models.Lab
 import play.modules.reactivemongo.ReactiveMongoApi
-import reactivemongo.api.{Cursor, ReadPreference}
-import reactivemongo.api.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.api.bson.collection.BSONCollection
-import reactivemongo.play.json.compat._
-import json2bson._
+import reactivemongo.api.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.api.commands.WriteResult
+import reactivemongo.api.{Cursor, ReadPreference}
+import reactivemongo.play.json.compat._
+import reactivemongo.play.json.compat.json2bson._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
