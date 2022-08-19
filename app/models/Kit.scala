@@ -5,7 +5,10 @@ import models.CallerType.CallerType
 import models.FileType.FileType
 import models.TestType.TestType
 import org.joda.time.DateTime
-import reactivemongo.api.bson.BSONObjectID
+import play.api.libs.json._
+import reactivemongo.api.bson._
+import reactivemongo.play.json.compat._
+import bson2json._
 
 
 object FileType extends Enumeration {
@@ -164,3 +167,42 @@ case class Kit(
                 calls: List[CallData],
                 strs: List[StrData]
               )
+
+// ===================== JSON and BSON Document Binding Boiler Plate =====================
+
+object NgsStats {
+  implicit object NgsStatsWrites extends OWrites[NgsStats] {
+    override def writes(o: NgsStats): JsObject = Json.obj(
+      "alignedReads" -> o.alignedReads,
+      "totalReads" -> o.totalReads,
+      "readLen" -> o.readLen,
+      "insertLen" -> o.insertLen,
+      "callable" -> o.callable,
+      "poorAlign" -> o.poorAlign,
+      "lowCov" -> o.lowCov,
+      "noCov" -> o.noCov
+    )
+  }
+
+  implicit object NgsStatsReads extends Reads[NgsStats] {
+    override def reads(json: JsValue): JsResult[NgsStats] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          NgsStats(
+            (obj \ "alignedReads").asOpt[Int],
+            (obj \ "totalReads").asOpt[Int],
+            (obj \ "readLen").asOpt[Int],
+            (obj \ "insertLen").asOpt[Int],
+            (obj \ "callable").asOpt[Int],
+            (obj \ "poorAlign").asOpt[Int],
+            (obj \ "lowCov").asOpt[Int],
+            (obj \ "noCov").asOpt[Int]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+      case _ => JsError("expected.jsobject")
+    }
+  }
+}
