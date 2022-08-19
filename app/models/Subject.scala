@@ -4,11 +4,9 @@ import models.EventType.EventType
 import org.joda.time.DateTime
 import play.api.libs.json.{Format, Json}
 import reactivemongo.play.json._
-import reactivemongo.bson.BSONObjectID
-import reactivemongo.bson._
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
-import reactivemongo.api.bson.GeoPoint
+import reactivemongo.api.bson._
 
 object EventType extends Enumeration {
   type EventType = Value
@@ -73,11 +71,18 @@ case class Subject(
                     mtSubclade: Option[BSONObjectID]
                   )
 
+// ===================== JSON and BSON Document Binding Boiler Plate =====================
+
 object LifeEvent {
   implicit val fmt: Format[LifeEvent] = Json.format[LifeEvent]
 
   implicit object LifeEventBSONReader extends BSONDocumentReader[LifeEvent] {
-    override def read(bson: BSONDocument): LifeEvent = ???
+    override def read(bson: BSONDocument): LifeEvent =
+      LifeEvent(
+        bson.getAs[String]("date"),
+        bson.getAs[String]("place"),
+        bson.getAs[GeoPoint]("point")
+      )
   }
 
   implicit object LifeEventBSONWriter extends BSONDocumentWriter[LifeEvent] {

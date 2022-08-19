@@ -4,9 +4,8 @@ import models.AccessionType.AccessionType
 import models.VariantType.VariantType
 import org.joda.time.DateTime
 import play.api.libs.json.{Format, Json}
+import reactivemongo.api.bson._
 import reactivemongo.play.json._
-import reactivemongo.bson.BSONObjectID
-import reactivemongo.bson._
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
 

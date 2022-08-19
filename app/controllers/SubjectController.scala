@@ -1,9 +1,9 @@
 package controllers
 
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
-import reactivemongo.bson.BSONObjectID
 import models.Subject
+import reactivemongo.api.bson.BSONObjectID
 import repositories.SubjectRepository
 
 import javax.inject.{Inject, Singleton}
@@ -44,7 +44,7 @@ class SubjectController @Inject()(implicit val ec: ExecutionContext, val subject
       subject =>
         BSONObjectID.parse(id) match {
           case Success(objectId) => subjectRepo.update(objectId, subject).map {
-            result => Ok(Json.toJson(result.ok))
+            result => Ok(Json.toJson(result.code))
           }
         }
     )

@@ -3,10 +3,10 @@ package repositories
 import models.Subject
 import org.joda.time.DateTime
 import play.modules.reactivemongo.ReactiveMongoApi
+import reactivemongo.api.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.api.{Cursor, ReadPreference}
 import reactivemongo.api.bson.collection.BSONCollection
 import reactivemongo.api.commands.WriteResult
-import reactivemongo.bson.{BSONDocument, BSONObjectID}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
