@@ -368,10 +368,39 @@ object StrData {
 
 object Kit {
   implicit object KitWrites extends OWrites[Kit] {
-    override def writes(o: Kit): JsObject = ???
+    override def writes(o: Kit): JsObject = Json.obj(
+      "_id" -> o._id,
+      "_creationDate" -> o._creationDate.fold(-1L)(_.getMillis),
+      "_updateDate" -> o._updateDate.fold(-1L)(_.getMillis),
+      "subjectID" -> o.subjectID,
+      "labID" -> o.labID,
+      "kitName" -> o.kitName,
+      "tests" -> o.tests,
+      "calls" -> o.calls,
+      "strs" -> o.strs
+    )
   }
 
-  implicit object callReads extends Reads[Kit] {
-    override def reads(json: JsValue): JsResult[Kit] = ???
+  implicit object kitReads extends Reads[Kit] {
+    override def reads(json: JsValue): JsResult[Kit] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          Kit(
+            (obj \ "_id").asOpt[BSONObjectID],
+            (obj \ "_creationDate").asOpt[Long].map(new DateTime(_)),
+            (obj \ "_updateDate").asOpt[Long].map(new DateTime(_)),
+            (obj \ "subjectID").as[BSONObjectID],
+            (obj \ "labId").as[Int],
+            (obj \ "kitName").asOpt[String],
+            (obj \ "tests").as[List[SequencingData]],
+            (obj \ "calls").as[List[CallData]],
+            (obj \ "strs").as[List[StrData]]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+      case _ => JsError("expected.jsobject")
+    }
   }
 }
