@@ -46,6 +46,7 @@ class SubjectController @Inject()(implicit val ec: ExecutionContext, val subject
           case Success(objectId) => subjectRepo.update(objectId, subject).map {
             result => Ok(Json.toJson(result.code))
           }
+          case Failure(_) => Future.successful(BadRequest("Cannot parse the subject id"))
         }
     )
   }

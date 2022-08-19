@@ -6,6 +6,10 @@ import org.joda.time.DateTime
 import play.api.libs.json._
 import reactivemongo.api.bson._
 
+import reactivemongo.play.json.compat._
+import bson2json._
+
+
 /**
  * Enumeration of the supported variant types
  */
@@ -131,29 +135,98 @@ object VariantReference {
 
 object VariantDefinition {
   implicit object VariantDefinitionWrites extends OWrites[VariantDefinition] {
-    override def writes(o: VariantDefinition): JsObject = ???
+    override def writes(o: VariantDefinition): JsObject = Json.obj(
+      "accession" -> o.accession.id,
+      "start" -> o.start,
+      "stop" -> o.stop,
+      "anc" -> o.anc,
+      "der" -> o.der,
+      "orient" -> o.orient
+    )
   }
 
   implicit object VariantDefinitionReads extends Reads[VariantDefinition] {
-    override def reads(json: JsValue): JsResult[VariantDefinition] = ???
+    override def reads(json: JsValue): JsResult[VariantDefinition] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          VariantDefinition(
+            AccessionType.apply((obj \ "accession").as[Int]),
+            (obj \ "start").as[Int],
+            (obj \ "stop").as[Int],
+            (obj \ "anc").as[String],
+            (obj \ "der").as[String],
+            (obj \ "anc").as[Boolean]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+      case _ => JsError("expected.jsobject")
+    }
   }
 }
 
 object SubjectStatus {
+
   implicit object SubjectStatusWrites extends OWrites[SubjectStatus] {
-    override def writes(o: SubjectStatus): JsObject = ???
+    override def writes(o: SubjectStatus): JsObject = Json.obj(
+      "subjectID" -> o.subjectID,
+      "status" -> o.status
+    )
   }
 
   implicit object SubjectStatusReads extends Reads[SubjectStatus] {
-    override def reads(json: JsValue): JsResult[SubjectStatus] = ???
+    override def reads(json: JsValue): JsResult[SubjectStatus] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          SubjectStatus(
+            (obj \ "subjectID").as[BSONObjectID],
+            (obj \ "status").asOpt[String]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+      case _ => JsError("expected.jsobject")
+    }
   }
 }
+
 object Variant {
   implicit object VariantWrites extends OWrites[Variant] {
-    override def writes(o: Variant): JsObject = ???
+    override def writes(o: Variant): JsObject = Json.obj(
+      "_id" -> o._id,
+      "_creationDate" -> o._creationDate.fold(-1L)(_.getMillis),
+      "_updateDate" -> o._updateDate.fold(-1L)(_.getMillis),
+      "name" -> o.name,
+      "vType" -> o.vType.id,
+      "refs" -> o.refs,
+      "definition" -> o.definition,
+      "subject" -> o.subject,
+      "comment" -> o.comment
+    )
   }
 
   implicit object VariantReads extends Reads[Variant] {
-    override def reads(json: JsValue): JsResult[Variant] = ???
+    override def reads(json: JsValue): JsResult[Variant] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          Variant(
+            (obj \ "_id").asOpt[BSONObjectID],
+            (obj \ "_creationDate").asOpt[Long].map(new DateTime(_)),
+            (obj \ "_updateDate").asOpt[Long].map(new DateTime(_)),
+            (obj \ "name").as[String],
+            VariantType.apply((obj \ "vType").as[Int]),
+            (obj \ "refs").as[Set[VariantReference]],
+            (obj \ "definition").as[Set[VariantDefinition]],
+            (obj \ "subject").as[Set[SubjectStatus]],
+            (obj \ "comment").asOpt[String]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+      case _ => JsError("expected.jsobject")
+    }
   }
 }
