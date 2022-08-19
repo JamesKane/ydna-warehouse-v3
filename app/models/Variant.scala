@@ -29,8 +29,8 @@ object VariantType extends Enumeration {
 object AccessionType extends Enumeration {
   type AccessionType = Value
 
-  val ChrY37 = Value(37, "Y(37)")
-  val ChrY = Value(38, "Y(38)")
+  val hg37 = Value(37, "CM000686.1")
+  val hg38 = Value(38, "CM000686.2")
   val CP086569_1 = Value(40, "CP086569.1")
   val CP086569_2 = Value(41, "CP086569.2")
   val CM034974_1 = Value(50, "CM034974.1")

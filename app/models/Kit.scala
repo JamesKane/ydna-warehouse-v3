@@ -13,10 +13,38 @@ import bson2json._
 
 object FileType extends Enumeration {
   type FileType = Value
+
+  val VCF   = Value(1)
+  val BED   = Value(2)
+  val gVCF  = Value(3)
+  val BAM   = Value(4)
+  val CRAM  = Value(5)
+  val StrCSV   = Value(6)
+  val mVAR  = Value(7)
+  val varComp = Value(10)
+  val gType = Value(11)
+  val lobystr = Value(12)
+  val ystr = Value(13)
+  val snpCSV = Value(14)
+  val tabBIS = Value(15)
+  val tab23nMe = Value(16)
+  val tabAnc = Value(17)
+  val tabldna = Value(18)
+  val csvldna = Value(19)
+  val csvmyH = Value(20)
+  val zip = Value(21)
 }
 
 object CallerType extends Enumeration {
   type CallerType = Value
+
+  val Gatk3     = Value(1, "gatk3")
+  val Gatk4     = Value(2, "gatk4")
+  val FreeBayes = Value(3, "freebayes")
+  val AEngine   = Value(4, "aengine")
+  val NA        = Value(5, "n/a")
+  val Fgc       = Value(6, "fgc")   // This is really a gatk3 workflow
+  val CG        = Value(7, "cg")
 }
 
 /**
