@@ -339,11 +339,30 @@ object CallData {
 
 object StrData {
   implicit object strDataWrites extends OWrites[StrData] {
-    override def writes(o: StrData): JsObject = ???
+    override def writes(o: StrData): JsObject = Json.obj(
+      "name" -> o.name,
+      "repeats" -> o.repeats,
+      "microRepeats" -> o.microRepeats,
+      "alleles" -> o.alleles
+    )
   }
 
   implicit object strDataReads extends Reads[StrData] {
-    override def reads(json: JsValue): JsResult[StrData] = ???
+    override def reads(json: JsValue): JsResult[StrData] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          StrData(
+            (obj \ "name").as[String],
+            (obj \ "repeats").as[Int],
+            (obj \ "microRepeats").asOpt[Int],
+            (obj \ "alleles").asOpt[String]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+      case _ => JsError("expected.jsobject")
+    }
   }
 }
 
