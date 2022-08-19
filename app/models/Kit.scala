@@ -10,6 +10,8 @@ import reactivemongo.api.bson._
 import reactivemongo.play.json.compat._
 import bson2json._
 
+import java.util.UUID
+
 
 object FileType extends Enumeration {
   type FileType = Value
@@ -185,10 +187,10 @@ case class StrData(
  * @param strs          The STR calls because we can't have nice things
  */
 case class Kit(
-                _id: Option[BSONObjectID],
+                _id: Option[UUID],
                 _creationDate: Option[DateTime],
                 _updateDate: Option[DateTime],
-                subjectID: BSONObjectID,
+                subjectID: UUID,
                 labID: Int,
                 kitName: Option[String] = None,
                 tests: List[SequencingData],
@@ -414,10 +416,10 @@ object Kit {
       case obj: JsObject => try {
         JsSuccess(
           Kit(
-            (obj \ "_id").asOpt[BSONObjectID],
+            (obj \ "_id").asOpt[UUID],
             (obj \ "_creationDate").asOpt[Long].map(new DateTime(_)),
             (obj \ "_updateDate").asOpt[Long].map(new DateTime(_)),
-            (obj \ "subjectID").as[BSONObjectID],
+            (obj \ "subjectID").as[UUID],
             (obj \ "labId").as[Int],
             (obj \ "kitName").asOpt[String],
             (obj \ "tests").as[List[SequencingData]],
