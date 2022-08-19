@@ -209,7 +209,7 @@ object NgsStats {
 
 object FileData {
   implicit object FileDataWrites extends OWrites[FileData] {
-    override def writes(o: FileData): JsonTime = Json.obj(
+    override def writes(o: FileData): JsObject = Json.obj(
       "_id" -> o._id,
       "fileType" -> o.fileType.id,
       "accession" -> o.accession.id,
@@ -250,3 +250,52 @@ object FileData {
   }
 }
 
+object SequencingData {
+  implicit object SequencingDataWrites extends OWrites[SequencingData] {
+    override def writes(o: SequencingData): JsObject = ???
+  }
+
+  implicit object SequencingDataReads extends Reads[SequencingData] {
+    override def reads(json: JsValue): JsResult[SequencingData] = ???
+  }
+}
+
+object Call {
+  implicit object callWrites extends OWrites[Call] {
+    override def writes(o: Call): JsObject = ???
+  }
+
+  implicit object callReads extends Reads[Call] {
+    override def reads(json: JsValue): JsResult[Call] = ???
+  }
+}
+
+object CallData {
+  implicit object callDataWrites extends OWrites[CallData] {
+    override def writes(o: CallData): JsObject = ???
+  }
+
+  implicit object callDataReads extends Reads[CallData] {
+    override def reads(json: JsValue): JsResult[CallData] = ???
+  }
+}
+
+object StrData {
+  implicit object strDataWrites extends OWrites[StrData] {
+    override def writes(o: StrData): JsObject = ???
+  }
+
+  implicit object strDataReads extends Reads[StrData] {
+    override def reads(json: JsValue): JsResult[StrData] = ???
+  }
+}
+
+object Kit {
+  implicit object KitWrites extends OWrites[Kit] {
+    override def writes(o: Kit): JsObject = ???
+  }
+
+  implicit object callReads extends Reads[Kit] {
+    override def reads(json: JsValue): JsResult[Kit] = ???
+  }
+}
