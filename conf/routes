@@ -6,12 +6,19 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
 
-# subjects routing
-GET     /subjects                   controllers.SubjectController.findAll()
-GET     /subjects/:id               controllers.SubjectController.findOne(id: java.util.UUID)
-POST    /subjects                   controllers.SubjectController.create()
-PUT     /subjects/:id               controllers.SubjectController.update(id: java.util.UUID)
-DELETE  /subjects/:id               controllers.SubjectController.delete(id: java.util.UUID)
+# subjects API routing
+GET     /api/v3/subjects        controllers.SubjectController.findAll()
+GET     /api/v3/subjects/:id    controllers.SubjectController.findOne(id: java.util.UUID)
+POST    /api/v3/subjects        controllers.SubjectController.create()
+PUT     /api/v3/subjects/:id    controllers.SubjectController.update(id: java.util.UUID)
+DELETE  /api/v3/subjects/:id    controllers.SubjectController.delete(id: java.util.UUID)
+
+# kits API routing
+GET     /api/v3/kits            controllers.KitController.findAll()
+GET     /api/v3/kits/:id        controllers.KitContoller.findOne(id: java.util.UUID)
+POST    /api/v3/kits            controllers.KitController.create()
+PUT     /api/v3/kits/:id        controllers.KitController.update(id: java.util.UUID)
+DELETE  /api/v3/kits/:id        controllers.KitController.delete(id: java.util.UUID)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
