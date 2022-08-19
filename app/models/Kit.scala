@@ -3,18 +3,10 @@ package models
 import models.AccessionType.AccessionType
 import models.CallerType.CallerType
 import models.FileType.FileType
-import models.Lab.Lab
 import models.TestType.TestType
 import org.joda.time.DateTime
 import reactivemongo.api.bson.BSONObjectID
 
-object Lab extends Enumeration {
-  type Lab = Value
-}
-
-object TestType extends Enumeration {
-  type TestType = Value
-}
 
 object FileType extends Enumeration {
   type FileType = Value
@@ -155,8 +147,8 @@ case class StrData(
  * @param _creationDate   The creation time
  * @param _updateDate     The update time
  * @param subjectID       The ID of the Subject this kit is associated with
- * @param lab             The Lab that performed the testing
- * @param kitID           The Lab's identifier, when available.
+ * @param labID           The Lab that performed the testing
+ * @param kitName         The Lab's identifier, when available.
  * @param tests           The tests performed and the kit along with the associated files
  * @param calls           The calls extracted from project reports or raw data files
  * @param strs            The STR calls because we can't have nice things
@@ -166,8 +158,8 @@ case class Kit(
                 _creationDate: Option[DateTime],
                 _updateDate: Option[DateTime],
                 subjectID: BSONObjectID,
-                lab: Lab,
-                kitID: Option[String] = None,
+                labID: Int,
+                kitName: Option[String] = None,
                 tests: List[SequencingData],
                 calls: List[CallData],
                 strs: List[StrData]
