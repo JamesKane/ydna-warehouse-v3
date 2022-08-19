@@ -1,5 +1,7 @@
 package models
 
+import play.api.libs.json._
+
 import models.TestType.TestType
 
 object TestType extends Enumeration {
@@ -34,3 +36,43 @@ case class Lab(
                 info: String,
                 testsOffered: List[LabTest] = List()
               )
+
+// ===================== JSON and BSON Document Binding Boiler Plate =====================
+
+object LabTest {
+  implicit object LabTestWrites extends OWrites[LabTest] {
+    override def writes(o: LabTest): JsObject = Json.obj(
+      "testType" -> o.testType.id,
+      "retired" -> o.retired
+    )
+  }
+
+  implicit object LabTestReads extends Reads[LabTest] {
+    override def reads(json: JsValue): JsResult[LabTest] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          LabTest(
+            TestType.apply((obj \ "date").as[Int]),
+            (obj \ "retired").as[Boolean]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+
+      case _ => JsError("expected.jsobject")
+    }
+  }
+}
+
+object Lab {
+  implicit object LabWrites extends OWrites[Lab] {
+    override def writes(o: Lab): JsObject = Json.obj(
+      "_id" -> o._id,
+      "name" -> o.name,
+      "info" -> o.info,
+      "url" -> o.url,
+      "testsOffered" -> o.testsOffered
+    )
+  }
+}
