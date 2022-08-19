@@ -12,6 +12,7 @@ lazy val root = (project in file("."))
       "org.reactivemongo" %% "play2-reactivemongo" % "0.20.13-play28",
       "org.reactivemongo" %% "reactivemongo-play-json-compat" % "1.0.1-play28",
       "org.reactivemongo" %% "reactivemongo-bson-compat" % "0.20.13",
+      "org.reactivemongo" %% "reactivemongo-bson-geo" % "1.0.10",
       "com.typesafe.play" %% "play-json-joda" % "2.9.2"
     )
   )
