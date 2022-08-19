@@ -1,14 +1,13 @@
 package controllers
 
+import models.Subject
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
-import models.Subject
-import reactivemongo.api.bson.BSONObjectID
 import repositories.SubjectRepository
 
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 @Singleton
 class SubjectController @Inject()(implicit val ec: ExecutionContext, val subjectRepo: SubjectRepository, val controllerComponents: ControllerComponents) extends BaseController {
@@ -19,12 +18,9 @@ class SubjectController @Inject()(implicit val ec: ExecutionContext, val subject
     }
   }
 
-  def findOne(id: String): Action[AnyContent] = Action.async { implicit request =>
-    BSONObjectID.parse(id) match {
-      case Success(objectID) => subjectRepo.findOne(objectID).map {
-        person => Ok(Json.toJson(person))
-      }
-      case Failure(_) => Future.successful(BadRequest("Cannot parse the person id"))
+  def findOne(id: UUID): Action[AnyContent] = Action.async { implicit request =>
+    subjectRepo.findOne(id).map {
+      person => Ok(Json.toJson(person))
     }
   }
 
@@ -38,25 +34,19 @@ class SubjectController @Inject()(implicit val ec: ExecutionContext, val subject
     )
   }
 
-  def update(id: String): Action[JsValue] = Action.async(controllerComponents.parsers.json) { implicit request =>
+  def update(id: UUID): Action[JsValue] = Action.async(controllerComponents.parsers.json) { implicit request =>
     request.body.validate[Subject].fold(
       _ => Future.successful(BadRequest("Cannot parse request body")),
       subject =>
-        BSONObjectID.parse(id) match {
-          case Success(objectId) => subjectRepo.update(objectId, subject).map {
-            result => Ok(Json.toJson(result.code))
-          }
-          case Failure(_) => Future.successful(BadRequest("Cannot parse the subject id"))
+        subjectRepo.update(id, subject).map {
+          result => Ok(Json.toJson(result.code))
         }
     )
   }
 
-  def delete(id: String): Action[AnyContent] = Action.async {implicit request =>
-    BSONObjectID.parse(id) match {
-      case Success(value) => subjectRepo.delete(value).map {
-        _ => NoContent
-      }
-      case Failure(_) => Future.successful(BadRequest("Cannot parse the subject id"))
+  def delete(id: UUID): Action[AnyContent] = Action.async { implicit request =>
+    subjectRepo.delete(id).map {
+      _ => NoContent
     }
   }
 }

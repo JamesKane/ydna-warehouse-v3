@@ -8,10 +8,10 @@ GET     /                           controllers.HomeController.index()
 
 # subjects routing
 GET     /subjects                   controllers.SubjectController.findAll()
-GET     /subjects/:id               controllers.SubjectController.findOne(id: String)
+GET     /subjects/:id               controllers.SubjectController.findOne(id: java.util.UUID)
 POST    /subjects                   controllers.SubjectController.create()
-PUT     /subjects/:id               controllers.SubjectController.update(id: String)
-DELETE  /subjects/:id               controllers.SubjectController.delete(id: String)
+PUT     /subjects/:id               controllers.SubjectController.update(id: java.util.UUID)
+DELETE  /subjects/:id               controllers.SubjectController.delete(id: java.util.UUID)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
