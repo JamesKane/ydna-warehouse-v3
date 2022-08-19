@@ -22,14 +22,14 @@ object CallerType extends Enumeration {
 /**
  * Read and alignment information about a shot-gun sequencing test.
  *
- * @param alignedReads  Number of aligned reads
- * @param totalReads    Total number of reads
- * @param readLen       Length of the reads
- * @param insertLen     Estimated insert size for paired-ends
- * @param callable      Estimated callable locations
- * @param poorAlign     Estimated poorly aligned locations
- * @param lowCov        Estimated low coverage locations
- * @param noCov         Estimated no-coverage locations
+ * @param alignedReads Number of aligned reads
+ * @param totalReads   Total number of reads
+ * @param readLen      Length of the reads
+ * @param insertLen    Estimated insert size for paired-ends
+ * @param callable     Estimated callable locations
+ * @param poorAlign    Estimated poorly aligned locations
+ * @param lowCov       Estimated low coverage locations
+ * @param noCov        Estimated no-coverage locations
  */
 case class NgsStats(
                      alignedReads: Option[Int],
@@ -80,8 +80,8 @@ case class FileData(
  *
  * This is a simple container for a specific type of test and the files associated with it
  *
- * @param testType  The type of test
- * @param fileData  The files that have been provided
+ * @param testType The type of test
+ * @param fileData The files that have been provided
  */
 case class SequencingData(
                            testType: TestType,
@@ -93,15 +93,15 @@ case class SequencingData(
  *
  * The specific calls for a location imported kit on a given file
  *
- * @param fileID          The file that provided the call evidence
- * @param allele          The called allele
- * @param depth           The depth of sequencing
- * @param qual            The call quality
- * @param _creationDate   The date the call was added
- * @param _updateDate     The last update of the call
+ * @param fileID        The file that provided the call evidence
+ * @param allele        The called allele
+ * @param depth         The depth of sequencing
+ * @param qual          The call quality
+ * @param _creationDate The date the call was added
+ * @param _updateDate   The last update of the call
  */
 case class Call(
-                 fileID: Option[BSONObjectID],  // YSEQ for now as the capability to add Sanger results without a file
+                 fileID: Option[BSONObjectID], // YSEQ for now as the capability to add Sanger results without a file
                  allele: String,
                  depth: Option[Int],
                  qual: Option[Double],
@@ -128,10 +128,10 @@ case class CallData(
  * Using a special container for STRs since not all the locations for the sites in use are published, so modeling as
  * CallData is not possible at the time this is being written.
  *
- * @param name            Common name of the STR
- * @param repeats         Primary repetition count
- * @param microRepeats    Micro-repeat count
- * @param alleles         The specific allele counted for the DYSxxxX tests
+ * @param name         Common name of the STR
+ * @param repeats      Primary repetition count
+ * @param microRepeats Micro-repeat count
+ * @param alleles      The specific allele counted for the DYSxxxX tests
  */
 case class StrData(
                     name: String,
@@ -146,15 +146,15 @@ case class StrData(
  * The Kit is a testing kit at a specific lab for a Subject.  The document holds information about the kit,
  * test files, and calls derived from the test files.
  *
- * @param _id             Mongo DB ID
- * @param _creationDate   The creation time
- * @param _updateDate     The update time
- * @param subjectID       The ID of the Subject this kit is associated with
- * @param labID           The Lab that performed the testing
- * @param kitName         The Lab's identifier, when available.
- * @param tests           The tests performed and the kit along with the associated files
- * @param calls           The calls extracted from project reports or raw data files
- * @param strs            The STR calls because we can't have nice things
+ * @param _id           Mongo DB ID
+ * @param _creationDate The creation time
+ * @param _updateDate   The update time
+ * @param subjectID     The ID of the Subject this kit is associated with
+ * @param labID         The Lab that performed the testing
+ * @param kitName       The Lab's identifier, when available.
+ * @param tests         The tests performed and the kit along with the associated files
+ * @param calls         The calls extracted from project reports or raw data files
+ * @param strs          The STR calls because we can't have nice things
  */
 case class Kit(
                 _id: Option[BSONObjectID],
@@ -206,3 +206,47 @@ object NgsStats {
     }
   }
 }
+
+object FileData {
+  implicit object FileDataWrites extends OWrites[FileData] {
+    override def writes(o: FileData): JsonTime = Json.obj(
+      "_id" -> o._id,
+      "fileType" -> o.fileType.id,
+      "accession" -> o.accession.id,
+      "origName" -> o.origName,
+      "checkSum" -> o.checkSum,
+      "urlPath" -> o.urlPath,
+      "indexPath" -> o.indexPath,
+      "ngsStats" -> o.ngsStats,
+      "caller" -> o.caller.map(_.id),
+      "_creationDate" -> o._creationDate.fold(-1L)(_.getMillis),
+      "_updateDate" -> o._updateDate.fold(-1L)(_.getMillis),
+    )
+  }
+
+  implicit object FileDataReads extends Reads[FileData] {
+    override def reads(json: JsValue): JsResult[FileData] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          FileData(
+            (obj \ "_id").asOpt[BSONObjectID],
+            FileType.apply((obj \ "fileType").as[Int]),
+            AccessionType.apply((obj \ "accession").as[Int]),
+            (obj \ "origName").asOpt[String],
+            (obj \ "checkSum").asOpt[String],
+            (obj \ "urlPath").asOpt[String],
+            (obj \ "indexPath").asOpt[String],
+            (obj \ "ngsStats").asOpt[NgsStats],
+            (obj \ "caller").asOpt[Int].map(CallerType.apply),
+            (obj \ "_creationDate").asOpt[Long].map(new DateTime(_)),
+            (obj \ "_updateDate").asOpt[Long].map(new DateTime(_))
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+      case _ => JsError("expected.jsobject")
+    }
+  }
+}
+
