@@ -3,11 +3,8 @@ package models
 import models.AccessionType.AccessionType
 import models.VariantType.VariantType
 import org.joda.time.DateTime
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json._
 import reactivemongo.api.bson._
-import reactivemongo.play.json._
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
 
 /**
  * Enumeration of the supported variant types
@@ -105,112 +102,58 @@ case class Variant(
 // ===================== JSON and BSON Document Binding Boiler Plate =====================
 
 object VariantReference {
-  implicit val fmt: Format[VariantReference] = Json.format[VariantReference]
-
-  implicit object VariantRefBSONReader extends BSONDocumentReader[VariantReference] {
-    override def read(bson: BSONDocument): VariantReference = {
-      VariantReference(
-        bson.getAs[String]("aka").get,
-        bson.getAs[String]("investigator"),
-        bson.getAs[Int]("year")
-      )
-    }
+  implicit object VariantReferenceWrites extends OWrites[VariantReference] {
+    override def writes(o: VariantReference): JsObject = Json.obj(
+      "aka" -> o.aka,
+      "investigator" -> o.investigator,
+      "year" -> o.year
+    )
   }
 
-  implicit object VariantRefBSONWriter extends BSONDocumentWriter[VariantReference] {
-    override def write(t: VariantReference): BSONDocument = {
-      BSONDocument(
-        "aka" -> t.aka,
-        "investigator" -> t.investigator,
-        "year" -> t.year
-      )
+  implicit object VariantReferenceReads extends Reads[VariantReference] {
+    override def reads(json: JsValue): JsResult[VariantReference] = json match {
+      case obj: JsObject => try {
+        JsSuccess(
+          VariantReference(
+            (obj \ "aka").as[String],
+            (obj \ "investigator").asOpt[String],
+            (obj \ "year").asOpt[Int]
+          )
+        )
+      } catch {
+        case cause: Throwable => JsError(cause.getMessage)
+      }
+
+      case _ => JsError("expected.jsobject")
     }
   }
 }
 
 object VariantDefinition {
-  implicit val fmt: Format[VariantDefinition] = Json.format[VariantDefinition]
-
-  implicit object VariantDefBSONReader extends BSONDocumentReader[VariantDefinition] {
-    override def read(bson: BSONDocument): VariantDefinition = {
-      VariantDefinition(
-        bson.getAs[Int]("accession").map(v => AccessionType.apply(v)).get,
-        bson.getAs[Int]("start").get,
-        bson.getAs[Int]("stop").get,
-        bson.getAs[String]("anc").get,
-        bson.getAs[String]("der").get,
-        bson.getAs[Boolean]("orient").get
-      )
-    }
+  implicit object VariantDefinitionWrites extends OWrites[VariantDefinition] {
+    override def writes(o: VariantDefinition): JsObject = ???
   }
 
-  implicit object VariantDefBSONWriter extends BSONDocumentWriter[VariantDefinition] {
-    override def write(t: VariantDefinition): BSONDocument = {
-      BSONDocument(
-        "accession" -> t.accession.id,
-        "start" -> t.start,
-        "stop" -> t.stop,
-        "anc" -> t.anc,
-        "der" -> t.der,
-        "orient" -> t.orient
-      )
-    }
+  implicit object VariantDefinitionReads extends Reads[VariantDefinition] {
+    override def reads(json: JsValue): JsResult[VariantDefinition] = ???
   }
 }
 
 object SubjectStatus {
-  implicit val fmt: Format[SubjectStatus] = Json.format[SubjectStatus]
-
-  implicit object SubjectStatusBSONReader extends BSONDocumentReader[SubjectStatus] {
-    override def read(bson: BSONDocument): SubjectStatus = {
-      SubjectStatus(
-        bson.getAs[BSONObjectID]("subjectID").get,
-        bson.getAs[String]("status")
-      )
-    }
+  implicit object SubjectStatusWrites extends OWrites[SubjectStatus] {
+    override def writes(o: SubjectStatus): JsObject = ???
   }
 
-  implicit object SubjectStatusBSONWriter extends BSONDocumentWriter[SubjectStatus] {
-    override def write(t: SubjectStatus): BSONDocument = {
-      BSONDocument(
-        "subjectId" -> t.subjectID,
-        "status" -> t.status
-      )
-    }
+  implicit object SubjectStatusReads extends Reads[SubjectStatus] {
+    override def reads(json: JsValue): JsResult[SubjectStatus] = ???
   }
 }
 object Variant {
-  implicit val fmt: Format[Variant] = Json.format[Variant]
-
-  implicit object VariantBSONReader extends BSONDocumentReader[Variant] {
-    override def read(bson: BSONDocument): Variant = {
-      Variant(
-        bson.getAs[BSONObjectID]("_id"),
-        bson.getAs[BSONDateTime]("_creationDate").map(dt => new DateTime(dt.value)),
-        bson.getAs[BSONDateTime]("_updateDate").map(dt => new DateTime(dt.value)),
-        bson.getAs[String]("name").get,
-        bson.getAs[Int]("vType").map(t => VariantType.apply(t)).get,
-        bson.getAs[Set[VariantReference]]("refs").get,
-        bson.getAs[Set[VariantDefinition]]("definition").get,
-        bson.getAs[Set[SubjectStatus]]("subject").get,
-        bson.getAs[String]("comment")
-      )
-    }
+  implicit object VariantWrites extends OWrites[Variant] {
+    override def writes(o: Variant): JsObject = ???
   }
 
-  implicit object VariantBSONWriter extends BSONDocumentWriter[Variant] {
-    override def write(t: Variant): BSONDocument = {
-      BSONDocument(
-        "_id" -> t._id,
-        "_creationDate" -> t._creationDate.map(date => BSONDateTime(date.getMillis)),
-        "_updateDate" -> t._updateDate.map(date => BSONDateTime(date.getMillis)),
-        "name" -> t.name,
-        "vType" -> t.vType.id,
-        "refs" -> t.refs,
-        "definition" -> t.definition,
-        "subject" -> t.subject,
-        "comment" -> t.comment
-      )
-    }
+  implicit object VariantReads extends Reads[Variant] {
+    override def reads(json: JsValue): JsResult[Variant] = ???
   }
 }
