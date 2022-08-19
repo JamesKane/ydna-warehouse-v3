@@ -6,12 +6,14 @@ import reactivemongo.api.bson._
 import reactivemongo.play.json.compat._
 import bson2json._
 
+import java.util.UUID
+
 /**
  * LifeEvent
  *
  * Date and place information for a MDKA life event
  *
- * @param date -  Gedcom formatted date
+ * @param date  -  Gedcom formatted date
  * @param place - Gedcom formatted place
  * @param point - Geo-point
  */
@@ -26,11 +28,11 @@ case class LifeEvent(
  *
  * Information about the most distant known ancestor
  *
- * @param givenName   The Given Name
- * @param surname     The Family Name
- * @param birthInfo   Birth event
- * @param deathInfo   Death event
- * @param info        Free-form additional details
+ * @param givenName The Given Name
+ * @param surname   The Family Name
+ * @param birthInfo Birth event
+ * @param deathInfo Death event
+ * @param info      Free-form additional details
  */
 case class MdkaInfo(
                      givenName: Option[String] = None,
@@ -43,17 +45,17 @@ case class MdkaInfo(
 /**
  * A test subject
  *
- * @param _id             Mongo DB ID
- * @param _creationDate   Date the subject was created
- * @param _updateDate     Last updated
- * @param displayName     The display name
- * @param paternalMdka    The Paternal MDKA information
- * @param ySubclade       The current known Y DNA subclade
- * @param maternalMdka    The Maternal MDKA information
- * @param mtSubclade      The current known mt DNA subclade
+ * @param _id           Mongo DB ID
+ * @param _creationDate Date the subject was created
+ * @param _updateDate   Last updated
+ * @param displayName   The display name
+ * @param paternalMdka  The Paternal MDKA information
+ * @param ySubclade     The current known Y DNA subclade
+ * @param maternalMdka  The Maternal MDKA information
+ * @param mtSubclade    The current known mt DNA subclade
  */
 case class Subject(
-                    _id: Option[BSONObjectID],
+                    _id: Option[UUID],
                     _creationDate: Option[DateTime],
                     _updateDate: Option[DateTime],
                     displayName: String,
@@ -145,8 +147,7 @@ object Subject {
     override def reads(json: JsValue): JsResult[Subject] = json match {
       case obj: JsObject => try {
         JsSuccess(
-          Subject(
-            (obj \ "_id").asOpt[BSONObjectID],
+          Subject((obj \ "_id").asOpt[UUID],
             (obj \ "_creationDate").asOpt[Long].map(new DateTime(_)),
             (obj \ "_updateDate").asOpt[Long].map(new DateTime(_)),
             (obj \ "displayName").as[String],
@@ -154,8 +155,7 @@ object Subject {
             (obj \ "paternalMdka").asOpt[MdkaInfo],
             (obj \ "ySubclade").asOpt[BSONObjectID],
             (obj \ "maternalMdka").asOpt[MdkaInfo],
-            (obj \ "mtSubclade").asOpt[BSONObjectID]
-          )
+            (obj \ "mtSubclade").asOpt[BSONObjectID])
         )
       } catch {
         case cause: Throwable => JsError(cause.getMessage)
