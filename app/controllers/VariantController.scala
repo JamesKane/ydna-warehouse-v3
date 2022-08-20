@@ -33,7 +33,7 @@ class VariantController @Inject()(implicit val ec: ExecutionContext, val repo: V
         repo.findOne(value).map {
           variant => Ok(Json.toJson(variant))
         }
-      case Failure(_) => VariantIdParseFailure
+      case Failure(_) => ControllerHelper.VariantIdParseFailure
     }
 
   }
@@ -51,7 +51,7 @@ class VariantController @Inject()(implicit val ec: ExecutionContext, val repo: V
       variant =>
         BSONObjectID.parse(id) match {
           case Success(value) => repo.update(value, variant).map { result => Ok(Json.toJson(result.code)) }
-          case Failure(_) => VariantIdParseFailure
+          case Failure(_) => ControllerHelper.VariantIdParseFailure
         }
 
     )
@@ -61,9 +61,8 @@ class VariantController @Inject()(implicit val ec: ExecutionContext, val repo: V
     BSONObjectID.parse(id) match {
       case Success(value) =>
         repo.delete(value).map { _ => NoContent }
-      case Failure(_) => VariantIdParseFailure
+      case Failure(_) => ControllerHelper.VariantIdParseFailure
     }
   }
 
-  private val VariantIdParseFailure = Future.successful(BadRequest("Cannot parse the variant id"))
 }
