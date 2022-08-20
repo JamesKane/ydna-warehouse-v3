@@ -31,13 +31,13 @@ class SubjectController @Inject()(implicit val ec: ExecutionContext, val subject
 
   def findOne(id: UUID): Action[AnyContent] = Action.async { implicit request =>
     subjectRepo.findOne(id).map {
-      person => Ok(Json.toJson(person))
+      subject => Ok(Json.toJson(subject))
     }
   }
 
   def create(): Action[JsValue] = Action.async(controllerComponents.parsers.json) { implicit request =>
     request.body.validate[Subject].fold(
-      _ => Future.successful(BadRequest("Cannot parse request body")),
+      _ => FutureBodyParseFailure,
       subject =>
         subjectRepo.create(subject).map {
           _ => Created(Json.toJson(subject))
@@ -47,7 +47,7 @@ class SubjectController @Inject()(implicit val ec: ExecutionContext, val subject
 
   def update(id: UUID): Action[JsValue] = Action.async(controllerComponents.parsers.json) { implicit request =>
     request.body.validate[Subject].fold(
-      _ => Future.successful(BadRequest("Cannot parse request body")),
+      _ => FutureBodyParseFailure,
       subject =>
         subjectRepo.update(id, subject).map {
           result => Ok(Json.toJson(result.code))
@@ -60,4 +60,6 @@ class SubjectController @Inject()(implicit val ec: ExecutionContext, val subject
       _ => NoContent
     }
   }
+
+  val FutureBodyParseFailure = Future.successful(BadRequest("Cannot parse request body"))
 }

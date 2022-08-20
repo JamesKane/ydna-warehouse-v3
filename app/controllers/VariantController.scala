@@ -31,9 +31,9 @@ class VariantController @Inject()(implicit val ec: ExecutionContext, val repo: V
     BSONObjectID.parse(id) match {
       case Success(value) =>
         repo.findOne(value).map {
-          kit => Ok(Json.toJson(kit))
+          variant => Ok(Json.toJson(variant))
         }
-      case Failure(_) => Future.successful(BadRequest("Cannot parse the variant id"))
+      case Failure(_) => VariantIdParseFailure
     }
 
   }
@@ -41,7 +41,7 @@ class VariantController @Inject()(implicit val ec: ExecutionContext, val repo: V
   def create(): Action[JsValue] = Action.async(controllerComponents.parsers.json) { implicit request =>
     request.body.validate[Variant].fold(
       _ => Future.successful(BadRequest("Cannot parse request body")),
-      kit => repo.create(kit).map { _ => Created(Json.toJson(kit)) }
+      variant => repo.create(variant).map { _ => Created(Json.toJson(variant)) }
     )
   }
 
@@ -51,7 +51,7 @@ class VariantController @Inject()(implicit val ec: ExecutionContext, val repo: V
       variant =>
         BSONObjectID.parse(id) match {
           case Success(value) => repo.update(value, variant).map { result => Ok(Json.toJson(result.code)) }
-          case Failure(_) => Future.successful(BadRequest("Cannot parse the variant id"))
+          case Failure(_) => VariantIdParseFailure
         }
 
     )
@@ -61,8 +61,9 @@ class VariantController @Inject()(implicit val ec: ExecutionContext, val repo: V
     BSONObjectID.parse(id) match {
       case Success(value) =>
         repo.delete(value).map { _ => NoContent }
-      case Failure(_) => Future.successful(BadRequest("Cannot parse the variant id"))
+      case Failure(_) => VariantIdParseFailure
     }
   }
 
+  private val VariantIdParseFailure = Future.successful(BadRequest("Cannot parse the variant id"))
 }
