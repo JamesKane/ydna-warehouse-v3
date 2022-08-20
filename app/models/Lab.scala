@@ -4,6 +4,11 @@ import play.api.libs.json._
 
 import models.TestType.TestType
 
+/**
+ * @author James R. Kane
+ * @version 3.0
+ * @since 2022-08-19
+ */
 object TestType extends Enumeration {
   type TestType = Value
 

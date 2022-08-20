@@ -13,6 +13,11 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+ * @author James R. Kane
+ * @version 3.0
+ * @since 2022-08-19
+ */
 class SubjectRepository @Inject()(implicit ec: ExecutionContext, api: ReactiveMongoApi) extends MongoRepository {
   val collectionName = "subjects"
 

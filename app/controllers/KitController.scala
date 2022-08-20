@@ -6,9 +6,21 @@ import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 import repositories.KitRepository
 
 import java.util.UUID
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+ * A basic CRUD controller for Kits
+ *
+ * @author James R. Kane
+ * @version 3.0
+ * @since 2022-08-19
+ *
+ * @param ec                    An implicit execution context
+ * @param repo                  A kit repository
+ * @param controllerComponents  Play controller components
+ */
+@Singleton
 class KitController @Inject()(implicit val ec: ExecutionContext, val repo: KitRepository, val controllerComponents: ControllerComponents) extends BaseController {
 
   def findAll(): Action[AnyContent] = Action.async { implicit request =>

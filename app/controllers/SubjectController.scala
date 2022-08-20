@@ -9,6 +9,17 @@ import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+ * A simple Subject CRUD controller
+ *
+ * @author James R. Kane
+ * @version 3.0
+ * @since 2022-08-19
+ *
+ * @param ec                    An implicit execution context
+ * @param subjectRepo           A subject repository
+ * @param controllerComponents  Play controller components
+ */
 @Singleton
 class SubjectController @Inject()(implicit val ec: ExecutionContext, val subjectRepo: SubjectRepository, val controllerComponents: ControllerComponents) extends BaseController {
 

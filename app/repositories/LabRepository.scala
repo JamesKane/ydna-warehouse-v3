@@ -12,6 +12,11 @@ import reactivemongo.play.json.compat.json2bson._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+ * @author James R. Kane
+ * @version 3.0
+ * @since 2022-08-19
+ */
 class LabRepository @Inject()(implicit ec: ExecutionContext, api: ReactiveMongoApi) extends MongoRepository {
 
   def collection: Future[BSONCollection] = api.database.map(db => db.collection("labs"))

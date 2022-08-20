@@ -9,6 +9,12 @@ import bson2json._
 import java.util.UUID
 
 /**
+ * @author James R. Kane
+ * @version 3.0
+ * @since 2022-08-19
+ */
+
+/**
  * LifeEvent
  *
  * Date and place information for a MDKA life event

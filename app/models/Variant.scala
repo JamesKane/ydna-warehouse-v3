@@ -9,6 +9,11 @@ import reactivemongo.api.bson._
 import reactivemongo.play.json.compat._
 import bson2json._
 
+/**
+ * @author James R. Kane
+ * @version 3.0
+ * @since 2022-08-19
+ */
 
 /**
  * Enumeration of the supported variant types

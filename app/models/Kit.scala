@@ -12,7 +12,11 @@ import bson2json._
 
 import java.util.UUID
 
-
+/**
+ * @author James R. Kane
+ * @version 3.0
+ * @since 2022-08-19
+ */
 object FileType extends Enumeration {
   type FileType = Value
 
