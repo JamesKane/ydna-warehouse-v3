@@ -18,7 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
  * @since 2022-08-19
  */
 class VariantRepository @Inject()(implicit ec: ExecutionContext, api: ReactiveMongoApi) extends MongoRepository {
-  def collection: Future[BSONCollection] = api.database.map(db => db.collection("Variants"))
+  def collection: Future[BSONCollection] = api.database.map(db => db.collection("variants"))
 
   def findAll(limit: Int = 100): Future[Seq[Variant]] =
     collection.flatMap(_.find(BSONDocument(), Option.empty[Variant])

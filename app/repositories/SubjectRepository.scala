@@ -19,9 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
  * @since 2022-08-19
  */
 class SubjectRepository @Inject()(implicit ec: ExecutionContext, api: ReactiveMongoApi) extends MongoRepository {
-  val collectionName = "subjects"
-
-  def collection: Future[BSONCollection] = api.database.map(db => db.collection(collectionName))
+  def collection: Future[BSONCollection] = api.database.map(db => db.collection("subjects"))
 
   def findAll(limit: Int = 100): Future[Seq[Subject]] =
     collection.flatMap(_.find(BSONDocument(), Option.empty[Subject])
